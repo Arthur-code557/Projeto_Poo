@@ -34,7 +34,7 @@ public class TelaPacientes extends JFrame {
     private JTextField campoNome;
     private JTextField campoCpf;
 
-    private boolean primerioAcesso = false;
+    private boolean primerioAcesso = true;
     private List<Paciente> pacientes = new ArrayList<>();
 
     @PostConstruct
