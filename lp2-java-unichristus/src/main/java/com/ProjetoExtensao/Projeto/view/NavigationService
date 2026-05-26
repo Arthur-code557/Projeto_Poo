@@ -1,0 +1,6 @@
+public class NavigationService {
+    public static void abrirTelaVacinas() {
+        TelaVacinas tela = new TelaVacinas();
+        tela.setVisible(true);
+    }
+}
