@@ -1,0 +1,8 @@
+package src.main.java.com.ProjetoExtensao.Projeto.view;
+
+public class NavigationService {
+    public static void abrirTelaVacinas() {
+        TelaVacinas tela = new TelaVacinas();
+        tela.setVisible(true);
+    }
+}
