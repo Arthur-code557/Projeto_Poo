@@ -1,0 +1,240 @@
+package src.main.java.com.ProjetoExtensao.Projeto.view;
+
+import javax.swing.*;
+import javax.swing.text.MaskFormatter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+
+import static sun.tools.jconsole.inspector.XDataViewer.dispose;
+
+public class TelaCadastroVacina extends Component {
+    // Componentes do Formulário
+    private JFormattedTextField txtCpfPaciente;
+    private JTextField txtNomePaciente;
+    private JTextField txtNomeVacina;
+    private JFormattedTextField txtDataAplicacao;
+    private JTextArea txtObservacoes;
+
+    private JButton btnBuscar;
+    private JButton btnSalvar;
+    private JButton btnLimpar;
+    private JButton btnCancelar;
+
+    // Referência da tela que lista as vacinas para poder atualizá-la
+    private TelaVacinas telaVacinasPai;
+
+    public TelaCadastroVacina(TelaVacinas telaVacinasPai) {
+        this.telaVacinasPai = telaVacinasPai;
+        inicializarComponentes();
+    }
+
+    private void inicializarComponentes() {
+        telaVacinasPai.setTitle("Registrar Nova Vacina");
+        txtCpfPaciente.setSize(500, 450);
+        telaVacinasPai.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        telaVacinasPai.setLocationRelativeTo(null);
+        txtCpfPaciente.setLayout(new BorderLayout(10, 10));
+
+        // --- PAINEL DO FORMULÁRIO ---
+        JPanel panelForm = new JPanel(new GridBagLayout());
+        panelForm.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        try {
+            // 1. CPF do Paciente
+            gbc.gridx = 0; gbc.gridy = 0;
+            panelForm.add(new JLabel("CPF do Paciente *:"), gbc);
+
+            // Criando máscara para CPF (###.###.###-##)
+            MaskFormatter maskCpf = new MaskFormatter("###.###.###-##");
+            maskCpf.setPlaceholderCharacter('_');
+            txtCpfPaciente = new JFormattedTextField(maskCpf);
+
+            // Sub-painel para o CPF + Botão Buscar
+            JPanel panelCpf = new JPanel(new BorderLayout(5, 0));
+            panelCpf.add(txtCpfPaciente, BorderLayout.CENTER);
+            btnBuscar = new JButton("Buscar");
+            panelCpf.add(btnBuscar, BorderLayout.EAST);
+
+            gbc.gridx = 1; gbc.gridy = 0;
+            panelForm.add(panelCpf, gbc);
+
+            // 2. Nome do Paciente (Somente Leitura)
+            gbc.gridx = 0; gbc.gridy = 1;
+            panelForm.add(new JLabel("Nome do Paciente:"), gbc);
+
+            txtNomePaciente = new JTextField();
+            txtNomePaciente.setEditable(false); // Somente leitura
+            txtNomePaciente.setBackground(new Color(240, 240, 240));
+            gbc.gridx = 1; gbc.gridy = 1;
+            panelForm.add(txtNomePaciente, gbc);
+
+            // 3. Nome/Identificação da Vacina
+            gbc.gridx = 0; gbc.gridy = 2;
+            panelForm.add(new JLabel("Nome/Identificação da Vacina *:"), gbc);
+
+            txtNomeVacina = new JTextField();
+            gbc.gridx = 1; gbc.gridy = 2;
+            panelForm.add(txtNomeVacina, gbc);
+
+            // 4. Dados de aplicação (Data)
+            gbc.gridx = 0; gbc.gridy = 3;
+            panelForm.add(new JLabel("Data de Aplicação (dd/MM/yyyy) *:"), gbc);
+
+            // Criando máscara para Data (##/##/####)
+            MaskFormatter maskData = new MaskFormatter("##/##/####");
+            maskData.setPlaceholderCharacter('_');
+            txtDataAplicacao = new JFormattedTextField(maskData);
+            gbc.gridx = 1; gbc.gridy = 3;
+            panelForm.add(txtDataAplicacao, gbc);
+
+            // 5. Observações
+            gbc.gridx = 0; gbc.gridy = 4;
+            gbc.fill = GridBagConstraints.BOTH;
+            panelForm.add(new JLabel("Observações:"), gbc);
+
+            txtObservacoes = new JTextArea(4, 20);
+            txtObservacoes.setLineWrap(true);
+            txtObservacoes.setWrapStyleWord(true);
+            JScrollPane scrollObs = new JScrollPane(txtObservacoes);
+            gbc.gridx = 1; gbc.gridy = 4;
+            panelForm.add(scrollObs, gbc);
+
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao formatar campos de texto.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+
+        add(panelForm, BorderLayout.CENTER);
+
+        // --- PAINEL DE BOTÕES ---
+        JPanel panelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        btnSalvar = new JButton("Salvar");
+        btnLimpar = new JButton("Limpar");
+        btnCancelar = new JButton("Cancelar");
+
+        panelBotoes.add(btnSalvar);
+        panelBotoes.add(btnLimpar);
+        panelBotoes.add(btnCancelar);
+
+        add(panelBotoes, BorderLayout.SOUTH);
+
+        // --- EVENTOS (AÇÕES DOS BOTÕES) ---
+
+        // Ação do Botão Buscar
+        btnBuscar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                buscarPaciente();
+            }
+        });
+
+        // Ação do Botão Salvar
+        btnSalvar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                salvarRegistro();
+            }
+        });
+
+        // Ação do Botão Limpar
+        btnLimpar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                limparCampos();
+            }
+        });
+
+        // Ação do Botão Cancelar
+        btnCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Fecha a tela atual
+            }
+        });
+    }
+
+    private void add(JPanel panelForm, String center) {
+    }
+
+    // Regra de Negócio: Busca de paciente por CPF
+    private void buscarPaciente() {
+        String cpf = txtCpfPaciente.getText().replaceAll("[^0-9]", "").trim();
+
+        if (cpf.isEmpty() || cpf.length() < 11) {
+            JOptionPane.showMessageDialog(this, "Por favor, insira um CPF válido para buscar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // TODO: Substitua pelo seu serviço real de busca de paciente, ex: PacienteService.buscarPorCpf(cpf)
+        // Simulando uma busca:
+        if (cpf.equals("12345678901")) {
+            txtNomePaciente.setText("João da Silva");
+        } else {
+            JOptionPane.showMessageDialog(this, "Paciente não encontrado com o CPF informado.", "Não Encontrado", JOptionPane.INFORMATION_MESSAGE);
+            txtNomePaciente.setText("");
+        }
+    }
+
+    // Regra de Negócio: Validação e Salvamento
+    private void salvarRegistro() {
+        // Validação dos campos obrigatórios
+        String cpf = txtCpfPaciente.getText().replaceAll("[^0-9]", "").trim();
+        String nomePaciente = txtNomePaciente.getText().trim();
+        String nomeVacina = txtNomeVacina.getText().trim();
+        String dataAplicacao = txtDataAplicacao.getText().replaceAll("[^0-9]", "").trim();
+        String observacoes = txtObservacoes.getText().trim();
+
+        if (cpf.isEmpty() || nomePaciente.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, busque e selecione um Paciente válido primeiro.", "Campo Obrigatório", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (nomeVacina.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "O campo 'Nome/Identificação da Vacina' é obrigatório.", "Campo Obrigatório", JOptionPane.ERROR_MESSAGE);
+            txtNomeVacina.requestFocus();
+            return;
+        }
+        if (dataAplicacao.isEmpty() || dataAplicacao.length() < 8) {
+            JOptionPane.showMessageDialog(this, "O campo 'Data de Aplicação' é obrigatório e deve ser válido.", "Campo Obrigatório", JOptionPane.ERROR_MESSAGE);
+            txtDataAplicacao.requestFocus();
+            return;
+        }
+
+        // Se passou nas validações, chama a camada Service para salvar
+        try {
+            // Instancie sua classe modelo (Exemplo genérico)
+            // Vacina vacina = new Vacina(nomeVacina, txtDataAplicacao.getText(), observacoes, cpf);
+
+            // Chamada exigida pelos critérios de aceitação:
+            // VacinaService.salvarVacina(vacina); 
+
+            // Mensagem de sucesso
+            JOptionPane.showMessageDialog(this, "Vacina registrada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+            // Critério de aceitação: Atualizar a tabela na TelaVacinas
+            if (telaVacinasPai != null) {
+                telaVacinasPai.atualizarTabela(); // Certifique-se de que sua TelaVacinas tenha esse método público
+            }
+
+            dispose(); // Fecha a tela após salvar
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao salvar no banco de dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void dispose() {
+    }
+
+    // Limpa todos os campos editáveis e reseta o nome do paciente
+    private void limparCampos() {
+        txtCpfPaciente.setValue(null);
+        txtNomePaciente.setText("");
+        txtNomeVacina.setText("");
+        txtDataAplicacao.setValue(null);
+        txtObservacoes.setText("");
+    }
+}
