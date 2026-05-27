@@ -1,0 +1,43 @@
+package servicos;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import repositorios.VacinaRepositorio;
+import java.util.List;
+
+@Service
+public class VacinaService {
+
+    @Autowired
+    private VacinaRepositorio vacinaRepositorio;
+
+    // Salva uma nova vacina ou atualiza uma existente
+    public void salvarVacina(Vacina vacina) {
+        vacinaRepository.save(vacina);
+    }
+
+    // Retorna a lista de vacinas associadas a um paciente específico
+    public List<Vacina> findVacinasByPaciente(Paciente paciente) {
+        return vacinaRepository.findByPacienteOrderByDataAplicacaoDesc(paciente);
+    }
+
+    // Retorna todas as vacinas cadastradas no sistema
+    public List<Vacina> findAllVacinas() {
+        return vacinaRepository.findAll();
+    }
+
+    /**
+     * Calcula o percentual de vacinação de uma determinada vacina em relação ao total de pacientes.
+     * Critério de Aceitação: Método de cálculo de percentual (para Relatórios)
+     */
+    public double calcularPercentualVacinacao(String nomeVacina, long totalPacientes) {
+        if (totalPacientes <= 0) {
+            return 0.0;
+        }
+
+        long totalVacinasDoTipo = vacinaRepository.countByNomeVacina(nomeVacina);
+
+        // Multiplica por 100.0 para obter o valor em formato de porcentagem (ex: 45.5 para 45.5%)
+        return ((double) totalVacinasDoTipo / totalPacientes) * 100.0;
+    }
+}
