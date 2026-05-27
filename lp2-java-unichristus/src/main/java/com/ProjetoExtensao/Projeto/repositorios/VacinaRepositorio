@@ -1,0 +1,21 @@
+package repositorios;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+// Assumindo que as classes Vacina e Paciente estejam no pacote de modelos (ex: modelos.Vacina)
+// adicione os imports correspondentes se necessário.
+
+@repositorios.Repository
+public interface VacinaRepositorio extends JpaRepository<Vacina, Long> {
+
+    // Busca vacinas de um paciente ordenadas pela data de aplicação de forma decrescente
+    List<Vacina> findByPacienteOrderByDataAplicacaoDesc(Paciente paciente);
+
+    // Busca vacinas pelo nome (contendo a palavra-chave e ignorando maiúsculas/minúsculas)
+    List<Vacina> findByNomeVacinaContainingIgnoreCase(String nome);
+
+    // Conta a quantidade de vacinas registradas com um determinado nome
+    long countByNomeVacina(String nomeVacina);
+}
