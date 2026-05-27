@@ -94,7 +94,7 @@ public class TelaGeral extends JFrame {
         gridPanel.add(btnEventos);
         gridPanel.add(createDashboardButton("Prontuários", "prontuarios.png"));
         gridPanel.add(btnConsultas);
-        gridPanel.add(createDashboardButton("Vacinas", "vacinas.png"));
+        gridPanel.add(btnVacinas); // Adicionando o botão configurado ao grid
         gridPanel.add(createDashboardButton("Relatórios", "relatorios.png"));
 
         mainPanel.add(gridPanel, BorderLayout.CENTER);
